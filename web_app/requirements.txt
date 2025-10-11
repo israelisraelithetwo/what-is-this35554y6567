@@ -1,0 +1,15 @@
+# Core FastAPI dependencies
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# For health checks
+requests>=2.31.0
+
+# Testing dependencies
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+httpx>=0.25.0
+
+# Note: TTS library is installed separately in Docker
+# For local development, install with: pip install TTS

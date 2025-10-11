@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת המרת טקסט לדיבור - TTS</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎙️ מערכת המרת טקסט לדיבור</h1>
+            <p class="subtitle">תמיכה בעברית ושיבוט קול</p>
+        </header>
+
+        <main>
+            <!-- Model Selection -->
+            <section class="card">
+                <h2>בחירת מודל</h2>
+                <div class="form-group">
+                    <label for="modelSelect">מודל TTS:</label>
+                    <select id="modelSelect" class="form-control">
+                        <option value="your_tts">YourTTS (ברירת מחדל - מהיר יותר)</option>
+                        <option value="xtts_v2">XTTS v2 (איכות גבוהה יותר)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="languageInput">קוד שפה:</label>
+                    <input type="text" id="languageInput" class="form-control" value="he" placeholder="he">
+                    <small>דוגמאות: he (עברית), en (אנגלית), ar (ערבית)</small>
+                </div>
+            </section>
+
+            <!-- Text to Speech -->
+            <section class="card">
+                <h2>המרת טקסט לדיבור</h2>
+                <div class="form-group">
+                    <label for="textInput">טקסט:</label>
+                    <textarea 
+                        id="textInput" 
+                        class="form-control" 
+                        rows="4" 
+                        placeholder="הכנס טקסט בעברית או בכל שפה אחרת..."
+                    ></textarea>
+                </div>
+                <button id="synthesizeBtn" class="btn btn-primary">
+                    <span class="btn-icon">🔊</span> סנתז דיבור
+                </button>
+            </section>
+
+            <!-- Voice Cloning -->
+            <section class="card">
+                <h2>שיבוט קול</h2>
+                <div class="form-group">
+                    <label for="textCloneInput">טקסט:</label>
+                    <textarea 
+                        id="textCloneInput" 
+                        class="form-control" 
+                        rows="3" 
+                        placeholder="הכנס טקסט לשיבוט קול..."
+                    ></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="speakerFile">קובץ אודיו של הדובר (WAV, MP3):</label>
+                    <input type="file" id="speakerFile" class="form-control" accept=".wav,.mp3,.flac,.ogg">
+                    <small>קובץ אודיו קצר (עד 15 שניות, מקסימום 5MB)</small>
+                </div>
+                <button id="cloneBtn" class="btn btn-secondary">
+                    <span class="btn-icon">🎭</span> שבט קול
+                </button>
+            </section>
+
+            <!-- Status and Results -->
+            <section class="card">
+                <h2>תוצאה</h2>
+                <div id="statusMessage" class="status-message"></div>
+                <div id="progressBar" class="progress-bar" style="display: none;">
+                    <div class="progress-bar-fill"></div>
+                </div>
+                <div id="audioResult" class="audio-result" style="display: none;">
+                    <h3>הקלטה:</h3>
+                    <audio id="audioPlayer" controls></audio>
+                    <div class="audio-controls">
+                        <a id="downloadLink" class="btn btn-success" download="output.wav">
+                            <span class="btn-icon">⬇️</span> הורד קובץ WAV
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Information -->
+            <section class="card info-card">
+                <h3>ℹ️ מידע חשוב</h3>
+                <ul>
+                    <li><strong>הרצה ראשונה:</strong> המערכת תוריד את המודלים אוטומטית בפעם הראשונה. זה עלול לקחת מספר דקות.</li>
+                    <li><strong>ביצועים:</strong> המערכת מותאמת ל-CPU. זמן העיבוד תלוי באורך הטקסט והמודל הנבחר.</li>
+                    <li><strong>שפות נתמכות:</strong> עברית (he), אנגלית (en), ערבית (ar), ועוד שפות רבות.</li>
+                    <li><strong>שיבוט קול:</strong> להעלות קובץ אודיו קצר וברור של הדובר לתוצאות מיטביות.</li>
+                </ul>
+            </section>
+        </main>
+
+        <footer>
+            <p>מערכת TTS מבוססת Coqui-AI | גרסה 1.0</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
