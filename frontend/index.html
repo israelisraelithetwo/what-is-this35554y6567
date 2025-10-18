@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F5-TTS Web MVP - Voice Cloning</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎙️ F5-TTS Voice Cloning</h1>
+            <p class="subtitle">Text-to-speech synthesis with voice cloning</p>
+        </header>
+
+        <main>
+            <!-- Status Section -->
+            <section class="status-section">
+                <div id="status" class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span id="status-text">Checking status...</span>
+                </div>
+                <div id="mode-indicators" class="mode-indicators"></div>
+            </section>
+
+            <!-- Upload Section -->
+            <section class="card">
+                <h2>1. Upload Voice Sample</h2>
+                <p class="section-description">
+                    Upload a short audio sample (≤30 seconds) of the voice you want to clone.
+                    Supported formats: WAV, MP3, FLAC, OGG, M4A
+                </p>
+                
+                <div class="upload-area">
+                    <input type="file" id="audio-file" accept="audio/*" />
+                    <label for="audio-file" class="upload-label">
+                        <span class="upload-icon">📁</span>
+                        <span id="upload-text">Choose audio file or drag & drop</span>
+                    </label>
+                </div>
+                
+                <div id="upload-info" class="upload-info" style="display: none;">
+                    <p><strong>File:</strong> <span id="file-name"></span></p>
+                    <p><strong>Duration:</strong> <span id="file-duration"></span></p>
+                    <p><strong>Sample ID:</strong> <code id="sample-id"></code></p>
+                </div>
+                
+                <div id="upload-error" class="error-message" style="display: none;"></div>
+            </section>
+
+            <!-- Reference Text Section -->
+            <section class="card">
+                <h2>2. Reference Text (Optional)</h2>
+                <p class="section-description">
+                    Provide the transcription of your audio sample for better results.
+                    Leave blank to use automatic speech recognition (requires more GPU memory).
+                </p>
+                
+                <textarea 
+                    id="ref-text" 
+                    placeholder="e.g., Hello, this is a sample of my voice..."
+                    rows="2"
+                ></textarea>
+            </section>
+
+            <!-- Synthesis Section -->
+            <section class="card">
+                <h2>3. Text to Synthesize</h2>
+                <p class="section-description">
+                    Enter the text you want to synthesize in the cloned voice (max 1000 characters).
+                </p>
+                
+                <textarea 
+                    id="synthesis-text" 
+                    placeholder="Enter the text you want to synthesize..."
+                    rows="4"
+                    maxlength="1000"
+                ></textarea>
+                
+                <div class="char-counter">
+                    <span id="char-count">0</span> / 1000 characters
+                </div>
+            </section>
+
+            <!-- Options Section -->
+            <section class="card">
+                <h2>4. Synthesis Options</h2>
+                
+                <div class="options-grid">
+                    <div class="option-group">
+                        <label for="mode-select">Quality Mode:</label>
+                        <select id="mode-select">
+                            <option value="light">Light (CPU) - Faster, lower quality</option>
+                            <option value="high">High (GPU) - Slower, higher quality</option>
+                        </select>
+                        <small id="mode-warning" class="warning-text" style="display: none;">
+                            ⚠️ GPU not available. High mode disabled.
+                        </small>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label for="speed-slider">Speaking Speed:</label>
+                        <input 
+                            type="range" 
+                            id="speed-slider" 
+                            min="0.5" 
+                            max="2.0" 
+                            step="0.1" 
+                            value="1.0"
+                        />
+                        <span id="speed-value">1.0x</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Section -->
+            <section class="action-section">
+                <button id="synthesize-btn" class="btn-primary" disabled>
+                    🎵 Synthesize Speech
+                </button>
+                
+                <div id="progress" class="progress-container" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <p class="progress-text">Synthesizing... This may take a moment.</p>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results-section" class="card results-section" style="display: none;">
+                <h2>✅ Synthesis Complete!</h2>
+                
+                <div class="audio-player-container">
+                    <audio id="audio-player" controls>
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                
+                <div class="results-info">
+                    <p><strong>Duration:</strong> <span id="result-duration"></span> seconds</p>
+                    <p><strong>Processing Time:</strong> <span id="result-time"></span> seconds</p>
+                    <p><strong>Real-time Factor:</strong> <span id="result-rtf"></span>x</p>
+                </div>
+                
+                <div class="results-actions">
+                    <a id="download-link" class="btn-secondary" download>
+                        ⬇️ Download Audio
+                    </a>
+                    <button id="synthesize-again-btn" class="btn-secondary">
+                        🔄 Synthesize Again
+                    </button>
+                </div>
+            </section>
+
+            <!-- Error Section -->
+            <section id="error-section" class="card error-section" style="display: none;">
+                <h2>❌ Error</h2>
+                <div id="error-message" class="error-message"></div>
+                <button id="try-again-btn" class="btn-secondary">
+                    🔄 Try Again
+                </button>
+            </section>
+        </main>
+
+        <footer>
+            <p>
+                F5-TTS Web MVP | 
+                <a href="/docs" target="_blank">API Docs</a> | 
+                <a href="/health" target="_blank">Health Check</a> | 
+                <a href="/metrics" target="_blank">Metrics</a>
+            </p>
+            <p class="footer-note">
+                ⚠️ This tool is for authorized internal use only. 
+                Always obtain proper consent before cloning voices.
+            </p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

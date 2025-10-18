@@ -1,0 +1,112 @@
+name: CI - Build and Test
+
+on:
+  push:
+    branches: [ main, feature/web-mvp ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black pytest pytest-asyncio httpx
+        # Install CPU-only PyTorch for CI
+        pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+        pip install -r backend/requirements.txt
+    
+    - name: Lint with flake8
+      run: |
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 backend/app --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 backend/app --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      continue-on-error: true
+    
+    - name: Check code formatting with black
+      run: |
+        black --check backend/app || true
+      continue-on-error: true
+    
+    - name: Run tests
+      run: |
+        cd backend
+        PYTHONPATH=. pytest tests/test_endpoints.py -v
+      env:
+        PYTHONPATH: backend
+
+  build-docker-cpu:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Build CPU Docker image
+      run: |
+        docker build -f backend/Dockerfile -t f5-tts-web:cpu .
+    
+    - name: Test Docker image
+      run: |
+        # Start container in background
+        docker run -d --name f5-tts-test -p 8000:8000 f5-tts-web:cpu
+        # Wait for container to start
+        sleep 10
+        # Test health endpoint (may fail if models not available)
+        curl -f http://localhost:8000/health || echo "Health check failed (expected without models)"
+        # Stop container
+        docker stop f5-tts-test
+        docker rm f5-tts-test
+
+  build-docker-gpu:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Build GPU Docker image
+      run: |
+        docker build -f backend/Dockerfile.cuda -t f5-tts-web:cuda .
+      continue-on-error: true  # May fail in CI without CUDA base
+
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'table'
+        exit-code: '0'  # Don't fail on vulnerabilities for now

@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # CPU Mode (Light) - Default
+  f5-tts-cpu:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    image: f5-tts-web:cpu
+    container_name: f5-tts-cpu
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+      - ./data/uploads:/app/data/uploads
+      - ./data/embeddings:/app/data/embeddings
+      - ./logs:/app/logs
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - MAX_REQUESTS_PER_MINUTE=10
+      - MAX_CONCURRENT_REQUESTS=2
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    profiles:
+      - cpu
+      - default
+
+  # GPU Mode (High Quality) - Optional
+  f5-tts-gpu:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.cuda
+    image: f5-tts-web:cuda
+    container_name: f5-tts-gpu
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+      - ./data/uploads:/app/data/uploads
+      - ./data/embeddings:/app/data/embeddings
+      - ./logs:/app/logs
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - MAX_REQUESTS_PER_MINUTE=10
+      - MAX_CONCURRENT_REQUESTS=2
+      - LOG_LEVEL=INFO
+      - CUDA_VISIBLE_DEVICES=0
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    profiles:
+      - gpu
+
+volumes:
+  models:
+  uploads:
+  embeddings:
+  logs:
