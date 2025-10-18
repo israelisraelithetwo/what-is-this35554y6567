@@ -1,0 +1,99 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Model weights and checkpoints
+models/*.pt
+models/*.pth
+models/*.safetensors
+models/*.ckpt
+models/*.bin
+ckpts/
+*.ckpt
+*.pt
+*.pth
+*.safetensors
+
+# Data directories
+data/uploads/*
+data/embeddings/*
+!data/uploads/.gitkeep
+!data/embeddings/.gitkeep
+!data/test_sample.wav
+
+# Logs
+*.log
+logs/
+
+# Docker
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment variables
+.env
+.env.local
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Audio files (except test samples)
+*.wav
+*.mp3
+*.flac
+!tests/*.wav
+!tests/*.mp3
+
+# Original repository images (keep these for now but typically would exclude)
+# *.png
+# *.jpg
+# *.jpeg
+# *.avif
+# *.zip
