@@ -11,7 +11,7 @@ const generateToken = (userId: string, email: string, role: string): string => {
   return jwt.sign(
     { id: userId, email, role },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRE || '7d' }
+    { expiresIn: process.env.JWT_EXPIRE || '7d' } as jwt.SignOptions
   );
 };
 
@@ -35,7 +35,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     });
 
     // Generate token
-    const token = generateToken(user._id.toString(), user.email, user.role);
+    const token = generateToken(String(user._id), user.email, user.role);
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -75,7 +75,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     // Generate token
-    const token = generateToken(user._id.toString(), user.email, user.role);
+    const token = generateToken(String(user._id), user.email, user.role);
 
     res.json({
       message: 'Login successful',
@@ -123,7 +123,7 @@ export const getProfile = async (req: AuthRequest, res: Response): Promise<void>
   }
 };
 
-export const logout = async (req: Request, res: Response): Promise<void> => {
+export const logout = async (_req: Request, res: Response): Promise<void> => {
   // With JWT, logout is handled client-side by removing the token
   // We just send a success response
   res.json({ message: 'Logout successful' });

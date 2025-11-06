@@ -46,7 +46,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Health check route
-app.get('/api/health', (req: Request, res: Response) => {
+app.get('/api/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', message: 'Server is running' });
 });
 
@@ -56,12 +56,13 @@ app.use('/api/forms', formRoutes);
 app.use('/api', submissionRoutes);
 
 // 404 handler
-app.use((req: Request, res: Response) => {
+app.use((_req: Request, res: Response) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
 // Global error handler
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error('Global error:', err);
   res.status(500).json({
     message: 'Internal server error',

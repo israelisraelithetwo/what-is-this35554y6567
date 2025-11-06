@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { formService } from '../../services/formService';
-import { Form } from '../../types/form';
 
 export const FormBuilder: React.FC = () => {
   const navigate = useNavigate();
